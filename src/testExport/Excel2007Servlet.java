@@ -14,6 +14,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Hyperlink;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -39,15 +47,40 @@ public class Excel2007Servlet extends HttpServlet {
 			OutputStream os = new FileOutputStream(filePath);
 			// 工作区
 			XSSFWorkbook wb = new XSSFWorkbook();
-			XSSFSheet sheet = wb.createSheet("test");
-			for (int i = 0; i < 1000; i++) {
+			XSSFCellStyle style=wb.createCellStyle();
+			style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+			style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+			style.setBorderRight(HSSFCellStyle.BORDER_SLANTED_DASH_DOT);
+			style.setRightBorderColor(HSSFColor.PINK.index);
+			style.setBorderBottom(HSSFCellStyle.BORDER_SLANTED_DASH_DOT);
+			style.setBottomBorderColor(HSSFColor.PINK.index);
+			style.setFillForegroundColor(IndexedColors.RED.getIndex());
+//			style.setFillBackgroundColor(IndexedColors.RED.getIndex());
+			style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+			XSSFSheet sheet1 = wb.createSheet("test1");
+			XSSFSheet sheet2 = wb.createSheet("test2");
+			XSSFRow row1_0 = sheet1.createRow(0);
+			XSSFRow row2_0 = sheet2.createRow(0);
+			row1_0.createCell(0).setCellValue("cell1");
+			row1_0.createCell(1).setCellValue("cell2");
+			row2_0.createCell(0).setCellValue("cell1");
+			row2_0.createCell(1).setCellValue("cell2");
+			for (int i = 1; i < 1000; i++) {
+				CreationHelper createHelper = wb.getCreationHelper();
+				Hyperlink link =createHelper.createHyperlink(Hyperlink.LINK_URL);
+				link.setAddress("http://www.baidu.com");
+				
 				// 创建第一个sheet
 				// 生成第一行
-				XSSFRow row = sheet.createRow(i);
+				XSSFRow row = sheet1.createRow(i);
 				// 给这一行的第一列赋值
-				row.createCell(0).setCellValue("column1");
+				XSSFCell cell0 = row.createCell(0);
+				cell0.setCellValue(i);
+//				row.createCell(0).setCellType(HSSFColor.PINK.index);
+				cell0.setCellStyle(style);
+				cell0.setHyperlink(link);
 				// 给这一行的第一列赋值
-				row.createCell(1).setCellValue("column2");
+				row.createCell(1).setCellValue(i+1);
 				System.out.println(i);
 			}
 			// 写文件
